@@ -83,6 +83,7 @@ struct midiControllerMapping edirolMapping[] =
 
 struct midiMapping_s midiMapping =
 {
+    NULL,
     FmSynth_NoteOn,
     FmSynth_NoteOff,
     FmSynth_PitchBend,

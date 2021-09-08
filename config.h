@@ -12,7 +12,10 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-//#define ESP32_AUDIO_KIT
+//#define AUDIO_PASS_THROUGH /* can be used to pass line in through audio processing to output */
+/* use following when you are using the esp32 audio kit v2.2 */
+//#define ESP32_AUDIO_KIT /* project has not been tested on other hardware, modify on own risk */
+//#define ES8388_ENABLED /* use this if the Audio Kit is equipped with ES8388 instead of the AC101 */
 
 
 /*
@@ -22,16 +25,27 @@
 #ifdef ESP32_AUDIO_KIT
 
 /* on board led */
-#define LED_PIN     19 // IO19 -> D5
+#ifdef ESP32_AUDIO_KIT
+#define BLINK_LED_PIN     12
+#else
+#define BLINK_LED_PIN     19 // IO19 -> D5
+#endif
+
+#ifdef ES8388_ENABLED
+/* i2c shared with codec */
+#define I2C_SDA 18
+#define I2C_SCL 23
+#endif
 
 #else /* ESP32_AUDIO_KIT */
 
 /* on board led */
-#define LED_PIN     2
+#define BLINK_LED_PIN     2
 
 /*
  * Define and connect your PINS to DAC here
  */
+
 #ifdef I2S_NODAC
 #define I2S_NODAC_OUT_PIN   22  /* noisy sound without DAC, add capacitor in series! */
 #else
@@ -43,6 +57,8 @@
 #define I2S_DOUT_PIN    26
 #endif
 
+
+
 #endif /* ESP32_AUDIO_KIT */
 
 /*
@@ -52,15 +68,21 @@
  */
 #define MIDI_RECV_FROM_SERIAL
 
+//#define MIDI_VIA_USB_ENABLED
+
 /*
  * pins used for MIDI
  */
 #ifdef ESP32_AUDIO_KIT
-#define RXD2 22
-#define TXD2 21
+#ifdef ES8388_ENABLED
+#define MIDI_RX_PIN 19
 #else
-#define RXD2 16 /* U2RRXD */
-#define TXD2 17
+#define MIDI_RX_PIN 22
+//#define TXD2 21
+#endif
+#else
+#define MIDI_RX_PIN 16 /* U2RRXD */
+//#define TXD2 17
 #endif
 
 #ifdef ESP32_AUDIO_KIT
@@ -72,5 +94,7 @@
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE_16BIT
 #endif
+
+
 
 #endif /* CONFIG_H_ */

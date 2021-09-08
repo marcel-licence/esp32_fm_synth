@@ -41,14 +41,22 @@ void setup()
 
     click_supp_gain = 0.0f;
 
+#ifdef BLINK_LED_PIN
     Blink_Setup();
+#endif
 
 #if 0
     Status_Setup();
 #endif
+
 #ifdef ESP32_AUDIO_KIT
+#ifdef ES8388_ENABLED
+    ES8388_Setup();
+#else
     ac101_setup();
 #endif
+#endif
+
 
     setup_i2s();
 #ifdef ESP32_AUDIO_KIT
@@ -72,12 +80,9 @@ void setup()
     WiFi.mode(WIFI_OFF);
 #endif
 
+#ifndef ESP8266
     btStop();
     // esp_wifi_deinit();
-
-#if 0
-    Delay_Init();
-    Delay_Reset();
 #endif
 
     FmSynth_Init();
@@ -104,6 +109,11 @@ void Core0TaskSetup()
      * init your stuff for core0 here
      */
     Status_Setup();
+
+#ifdef MIDI_VIA_USB_ENABLED
+    usb_setup();
+    MIDI_setShortMsgHandler(HandleShortMsg);
+#endif
 }
 
 void Core0TaskLoop()
@@ -112,6 +122,9 @@ void Core0TaskLoop()
      * put your loop stuff for core0 here
      */
     Status_Process();
+#ifdef MIDI_VIA_USB_ENABLED
+    usb_loop();
+#endif
 }
 
 void Core0Task(void *parameter)
@@ -186,20 +199,25 @@ static float m1_sample[SAMPLE_BUFFER_SIZE];
 #define absf(a) ((a>=0.0f)?(a):(-a))
 #endif
 
-#include "AC101.h" /* only compatible with forked repo: https://github.com/marcel-licence/AC101 */
-extern AC101 ac;
-
 /*
  * the main audio task
  */
 inline void audio_task()
 {
+#ifdef AUDIO_PASS_THROUGH
     memset(fl_sample, 0, sizeof(fl_sample));
     memset(fr_sample, 0, sizeof(fr_sample));
     memset(m1_sample, 0, sizeof(m1_sample));
+#endif
 
 #ifdef ESP32_AUDIO_KIT
     i2s_read_stereo_samples_buff(fl_sample, fr_sample, SAMPLE_BUFFER_SIZE);
+#endif
+
+#ifndef AUDIO_PASS_THROUGH
+    memset(fl_sample, 0, sizeof(fl_sample));
+    memset(fr_sample, 0, sizeof(fr_sample));
+    memset(m1_sample, 0, sizeof(m1_sample));
 #endif
 
     for (int n = 0; n < SAMPLE_BUFFER_SIZE; n++)
@@ -313,5 +331,8 @@ void loop()
      */
     Midi_Process();
 
+#ifdef MIDI_VIA_USB_ENABLED
+    UsbMidi_ProcessSync();
+#endif
     //Console_Process();
 }
