@@ -2,7 +2,8 @@
 ESP32 FM Synthesizer MIDI Module, arduino project
 (sounds like YM2612, Sega Genesis/Mega Drive)
 
-The project can be seen in my video https://youtu.be/rGTw05GKwvU
+- video presentation of the initial state of this project https://youtu.be/rGTw05GKwvU
+- little quick start guide to get started with arduino synthesizer / music projects: https://youtu.be/ZNxGCB-d68g
 
 ---
 ## Overview
