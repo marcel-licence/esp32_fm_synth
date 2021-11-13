@@ -108,8 +108,9 @@
 #define SAMPLE_SIZE_16BIT
 #else
 #define SAMPLE_RATE 48000
-#define SAMPLE_SIZE_16BIT
+#define SAMPLE_SIZE_16BIT /* 32 bit seems not to work at the moment */
 #endif
 
 
 #endif /* CONFIG_H_ */
+

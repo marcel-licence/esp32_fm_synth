@@ -1,6 +1,4 @@
 /*
- * The GNU GENERAL PUBLIC LICENSE (GNU GPLv3)
- *
  * Copyright (c) 2021 Marcel Licence
  *
  * This program is free software: you can redistribute it and/or modify
@@ -41,7 +39,7 @@
 
 
 /* max delay can be changed but changes also the memory consumption */
-#define MAX_DELAY	(SAMPLE_RATE ) /* 0.5s */
+#define MAX_DELAY   (SAMPLE_RATE ) /* 0.5s */
 
 /*
  * module variables
