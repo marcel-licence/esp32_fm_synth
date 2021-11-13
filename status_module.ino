@@ -117,8 +117,10 @@ void Status_PrintVu(float *value, uint8_t vuMax)
 void Status_PrintAll(void)
 {
     char emptyLine[] = "                                ";
+#if 0 /* not used */
     char emptyLineMin[] = "                               ";
     char emptyLineLong[] = "                                                                ";
+#endif
     Serial.printf("\033[?25l");
     Serial.printf("\033[%d;%dH", 0, 0);
     //Serial.printf("--------------------------------\n");
