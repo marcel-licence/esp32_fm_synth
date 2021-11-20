@@ -49,8 +49,8 @@
 #define LED_STRIP_PIN         12
 
 /* AC101 pins */
-#define AC101_PIN_SDA                    33
-#define AC101_PIN_SCL                     32
+#define AC101_PIN_SDA               33
+#define AC101_PIN_SCL               32
 
 #define IIS_SCLK                    27
 #define IIS_LCLK                    26

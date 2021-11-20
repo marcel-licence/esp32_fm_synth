@@ -28,14 +28,21 @@
  * Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
  */
 
-/*
- * This is a simple implementation of a stereo s16 delay line
+/**
+ * @file simple_delay.ino
+ * @author Marcel Licence
+ * @date 04.10.2021
+ *
+ * @brief This is a simple implementation of a stereo s16 delay line
  * - level adjustable
  * - feedback
  * - length adjustable
- *
- * Author: Marcel Licence
  */
+
+
+#ifdef __CDT_PARSER__
+#include <cdt.h>
+#endif
 
 
 /* max delay can be changed but changes also the memory consumption */

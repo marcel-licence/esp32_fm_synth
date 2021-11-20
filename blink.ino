@@ -33,8 +33,13 @@
  * @author Marcel Licence
  * @date 12.05.2021
  *
- * @brief  this file includes a simple blink task implementation
+ * @brief this file includes a simple blink task implementation
  */
+
+
+#ifdef __CDT_PARSER__
+#include "cdt.h"
+#endif
 
 
 #ifdef BLINK_LED_PIN

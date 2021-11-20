@@ -28,14 +28,23 @@
  * Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
  */
 
-/*
- * this file contains the implementation of the terminal output
+/**
+ * @file status_module.ino
+ * @author Marcel Licence
+ * @date 04.10.2021
+ *
+ * @brief This file contains the implementation of the terminal output
  * the output is vt100 compatible and you should use a terminal like teraTerm
  *
- * source: https://ttssh2.osdn.jp/index.html.en​
- *
- * Author: Marcel Licence
+ * @see VT100 mode used here: https://youtu.be/r0af0DB1R68
+ * @see TeraTerm pro https://ttssh2.osdn.jp/index.html.en​
  */
+
+
+#ifdef __CDT_PARSER__
+#include <cdt.h>
+#endif
+
 
 bool triggerTerminalOutput = true; /*!< necessary for usage without vt100 compliant terminal */
 
@@ -170,6 +179,16 @@ void Status_ValueChangedFloatArr(const char *descr, float value, int index)
 {
     statusMsgShowTimer = 0;
     sprintf(statusMsg, "%s[%d]: %0.3f", descr, index, value);
+    triggerTerminalOutput = true;
+}
+
+/*
+ * update top line message including an integer value
+ */
+void Status_ValueChangedIntArr(const char *descr, int value, int index)
+{
+    statusMsgShowTimer = 0;
+    sprintf(statusMsg, "%s[%d]: %d", descr, index, value);
     triggerTerminalOutput = true;
 }
 

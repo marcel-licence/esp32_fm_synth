@@ -349,6 +349,10 @@ void loop_1Hz(void)
  */
 void loop()
 {
+#ifdef ARP_MODULE_ENABLED
+    Arp_Process(SAMPLE_BUFFER_SIZE);
+#endif
+
     audio_task(); /* audio tasks blocks for one sample -> 1/44100s */
 
     static uint32_t loop_cnt;
