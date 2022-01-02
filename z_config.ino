@@ -76,6 +76,17 @@ struct midiControllerMapping edirolMapping[] =
     { 0x0, 0x53, "A9", NULL, NULL, 0},
 
     /* lower row of buttons */
+#ifdef ARP_MODULE_ENABLED
+    { 0x0, 0x51, "B1", NULL, Arp_SelectSequence, 0},
+    { 0x1, 0x51, "B2", NULL, Arp_SelectSequence, 1},
+    { 0x2, 0x51, "B3", NULL, Arp_SelectSequence, 2},
+    { 0x3, 0x51, "B4", NULL, Arp_SelectSequence, 3},
+
+    { 0x4, 0x51, "B5", NULL, Arp_SelectSequence, 4},
+    { 0x5, 0x51, "B6", NULL, Arp_SelectSequence, 5},
+    { 0x6, 0x51, "B7", NULL, Arp_SelectSequence, 6},
+    { 0x7, 0x51, "B8", NULL, Arp_SelectSequence, 7},
+#else
     { 0x0, 0x51, "B1", NULL, FmSynth_SetAlgorithm, 0},
     { 0x1, 0x51, "B2", NULL, FmSynth_SetAlgorithm, 1},
     { 0x2, 0x51, "B3", NULL, FmSynth_SetAlgorithm, 2},
@@ -85,6 +96,7 @@ struct midiControllerMapping edirolMapping[] =
     { 0x5, 0x51, "B6", NULL, FmSynth_SetAlgorithm, 5},
     { 0x6, 0x51, "B7", NULL, FmSynth_SetAlgorithm, 6},
     { 0x7, 0x51, "B8", NULL, FmSynth_SetAlgorithm, 7},
+#endif
 
     { 0x1, 0x53, "B9", NULL, FmSynth_SetAlgorithm, 8},
 
@@ -128,11 +140,18 @@ struct midiMapping_s midiMapping =
     MidiCtrl_NoteOn,
     MidiCtrl_NoteOff,
 #else
+#ifdef ARP_MODULE_ENABLED
+    Arp_NoteOn,
+    Arp_NoteOff,
+#else
     FmSynth_NoteOn,
     FmSynth_NoteOff,
 #endif
+#endif
     FmSynth_PitchBend,
     FmSynth_ModulationWheel,
+    Synth_RealTimeMsg,
+    Synth_SongPosition,
     edirolMapping,
     sizeof(edirolMapping) / sizeof(edirolMapping[0]),
 };

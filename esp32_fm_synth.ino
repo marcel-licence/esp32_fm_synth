@@ -36,6 +36,11 @@
  * Author: Marcel Licence
  */
 
+
+#ifdef __CDT_PARSER__
+#include <cdt.h>
+#endif
+
 /*
  * global project configuration
  * stays on top of multi-file-compilation
@@ -49,8 +54,10 @@
 #include <SD_MMC.h>
 #include <WiFi.h>
 
-/* this is used to add a task to core 0 */
-TaskHandle_t  Core0TaskHnd ;
+#include <ml_scope.h>
+#include <ml_arp.h>
+#include <ml_vu_meter.h>
+
 
 /* to avoid the high click when turning on the microphone */
 static float click_supp_gain = 0.0f;
@@ -129,8 +136,20 @@ void setup()
     Serial.printf("Total PSRAM: %d\n", ESP.getPsramSize());
     Serial.printf("Free PSRAM: %d\n", ESP.getFreePsram());
 
+    Core0TaskInit();
+}
+
+/*
+ * Core 0
+ */
+/* this is used to add a task to core 0 */
+TaskHandle_t Core0TaskHnd;
+
+inline
+void Core0TaskInit()
+{
     /* we need a second task for the terminal output */
-    xTaskCreatePinnedToCore(Core0Task, "Core0Task", 8000, NULL, 999, &Core0TaskHnd, 0);
+    xTaskCreatePinnedToCore(Core0Task, "CoreTask0", 8000, NULL, 999, &Core0TaskHnd, 0);
 }
 
 void Core0TaskSetup()
@@ -211,6 +230,70 @@ void App_ToggleSource(uint8_t channel, float value)
 void App_SetOutputLevel(uint8_t not_used, float value)
 {
     master_output_gain = value;
+}
+
+static uint32_t sync = 0;
+
+void Midi_SyncRecvd()
+{
+    sync += 1;
+}
+
+void Synth_RealTimeMsg(uint8_t msg)
+{
+#ifndef MIDI_SYNC_MASTER
+    switch (msg)
+    {
+    case 0xfa: /* start */
+        Arp_Reset();
+        break;
+    case 0xf8: /* Timing Clock */
+        Midi_SyncRecvd();
+        break;
+    }
+#endif
+}
+
+#ifdef MIDI_SYNC_MASTER
+
+#define MIDI_PPQ    24
+#define SAMPLES_PER_MIN  (SAMPLE_RATE*60)
+
+static float midi_tempo = 120.0f;
+
+void MidiSyncMasterLoop(void)
+{
+    static float midiDiv = 0;
+    midiDiv += SAMPLE_BUFFER_SIZE;
+    if (midiDiv >= (SAMPLES_PER_MIN) / (MIDI_PPQ * midi_tempo))
+    {
+        midiDiv -= (SAMPLES_PER_MIN) / (MIDI_PPQ * midi_tempo);
+        Midi_SyncRecvd();
+    }
+}
+
+void Synth_SetMidiMasterTempo(uint8_t unused, float val)
+{
+    midi_tempo = 60.0f + val * (240.0f - 60.0f);
+}
+
+#endif
+
+void Synth_SongPosition(uint16_t pos)
+{
+    Serial.printf("Songpos: %d\n", pos);
+    if (pos == 0)
+    {
+        Arp_Reset();
+    }
+}
+
+void Synth_SongPosReset(uint8_t unused, float var)
+{
+    if (var > 0)
+    {
+        Synth_SongPosition(0);
+    }
 }
 
 /*
@@ -330,12 +413,6 @@ inline void audio_task()
  */
 void loop_1Hz(void)
 {
-#if 0 /* i can't remember for what this should be good for */
-    static uint32_t cycl = ESP.getCycleCount();
-    static uint32_t lastCycl;
-
-    lastCycl = cycl;
-#endif
 #ifdef ESP32_AUDIO_KIT
     button_loop();
 #endif
@@ -350,7 +427,7 @@ void loop_1Hz(void)
 void loop()
 {
 #ifdef ARP_MODULE_ENABLED
-    Arp_Process(SAMPLE_BUFFER_SIZE);
+    Arp_Process(1);
 #endif
 
     audio_task(); /* audio tasks blocks for one sample -> 1/44100s */
@@ -358,7 +435,7 @@ void loop()
     static uint32_t loop_cnt;
 
     loop_cnt += SAMPLE_BUFFER_SIZE;
-    if ((loop_cnt) >= SAMPLE_RATE)
+    if (loop_cnt >= SAMPLE_RATE)
     {
         loop_cnt = 0;
         loop_1Hz();
@@ -373,4 +450,52 @@ void loop()
     UsbMidi_ProcessSync();
 #endif
     //Console_Process();
+}
+
+/*
+ * Callbacks
+ */
+void MidiCtrl_Cb_NoteOn(uint8_t ch, uint8_t note, float vel)
+{
+    Arp_NoteOn(ch, note, vel);
+}
+
+void MidiCtrl_Cb_NoteOff(uint8_t ch, uint8_t note)
+{
+    Arp_NoteOff(ch, note);
+}
+
+void MidiCtrl_Status_ValueChangedIntArr(const char *descr, int value, int index)
+{
+    Status_ValueChangedIntArr(descr, value, index);
+}
+
+void Arp_Cb_NoteOn(uint8_t ch, uint8_t note, float vel)
+{
+    FmSynth_NoteOn(ch, note, vel);
+}
+
+void Arp_Cb_NoteOff(uint8_t ch, uint8_t note)
+{
+    FmSynth_NoteOff(ch, note);
+}
+
+void Arp_Status_ValueChangedInt(const char *msg, int value)
+{
+    Status_ValueChangedInt(msg, value);
+}
+
+void Arp_Status_LogMessage(const char *msg)
+{
+    Status_LogMessage(msg);
+}
+
+void Arp_Status_ValueChangedFloat(const char *msg, float value)
+{
+    Status_ValueChangedFloat(msg, value);
+}
+
+void Arp_Cb_Step(uint8_t step)
+{
+    /* ignore */
 }
