@@ -427,7 +427,8 @@ void loop_1Hz(void)
 void loop()
 {
 #ifdef ARP_MODULE_ENABLED
-    Arp_Process(1);
+    Arp_Process(sync);
+    sync = 0;
 #endif
 
     audio_task(); /* audio tasks blocks for one sample -> 1/44100s */
