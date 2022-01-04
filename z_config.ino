@@ -130,7 +130,7 @@ struct midiControllerMapping edirolMapping[] =
     { 0x0, 0x12, "R9", NULL, Reverb_SetLevel, 0},
 
     /* Central slider */
-    { 0x0, 0x13, "H1", NULL, NULL, 0},
+    { 0x0, 0x13, "H1", NULL, Synth_SetMidiMasterTempo, 0},
 };
 
 struct midiMapping_s midiMapping =

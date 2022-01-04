@@ -54,12 +54,14 @@
 #include <SD_MMC.h>
 #include <WiFi.h>
 
+
+#include <ml_arp.h>
+#include <ml_vu_meter.h>
+#include <ml_reverb.h>
+#include <ml_midi_ctrl.h>
 #if 0 /* this comes in future */
 #include <ml_scope.h>
 #endif
-#include <ml_arp.h>
-#include <ml_vu_meter.h>
-
 
 /* to avoid the high click when turning on the microphone */
 static float click_supp_gain = 0.0f;
@@ -76,7 +78,6 @@ void setup()
 
     Serial.printf("Loading data\n");
 
-    Serial.printf("Firmware started successfully\n");
 
     click_supp_gain = 0.0f;
 
@@ -88,22 +89,20 @@ void setup()
     Status_Setup();
 #endif
 
-#ifdef ESP32_AUDIO_KIT
-#ifdef ES8388_ENABLED
-    ES8388_Setup();
-#else
-    ac101_setup();
-#endif
-#endif
+    Audio_Setup();
 
-
-    setup_i2s();
 #ifdef ESP32_AUDIO_KIT
     button_setup();
 #endif
     Sine_Init();
 
-    Reverb_Setup();
+    /*
+     * Initialize reverb
+     * The buffer shall be static to ensure that
+     * the memory will be exclusive available for the reverb module
+     */
+    static float revBuffer[REV_BUFF_SIZE];
+    Reverb_Setup(revBuffer);
 
     Delay_Init();
 
@@ -112,20 +111,11 @@ void setup()
      */
     Midi_Setup();
 
-
-#if 0
-    setup_wifi();
-#else
-    WiFi.mode(WIFI_OFF);
-#endif
-
-#ifndef ESP8266
-    btStop();
-    // esp_wifi_deinit();
-#endif
+    Arp_Init(24 * 4); /* slowest tempo one step per bar */
 
     FmSynth_Init();
 
+#ifdef ESP32
     Serial.printf("ESP.getFreeHeap() %d\n", ESP.getFreeHeap());
     Serial.printf("ESP.getMinFreeHeap() %d\n", ESP.getMinFreeHeap());
     Serial.printf("ESP.getHeapSize() %d\n", ESP.getHeapSize());
@@ -137,6 +127,13 @@ void setup()
     /* PSRAM will be fully used by the looper */
     Serial.printf("Total PSRAM: %d\n", ESP.getPsramSize());
     Serial.printf("Free PSRAM: %d\n", ESP.getFreePsram());
+#endif
+
+    Serial.printf("Firmware started successfully\n");
+
+#if 0 /* activate this line to get a tone on startup to test the DAC */
+    Synth_NoteOn(0, 64, 1.0f);
+#endif
 
     Core0TaskInit();
 }
@@ -214,13 +211,17 @@ void App_ToggleSource(uint8_t channel, float value)
         {
         case acSrcLine:
             click_supp_gain = 0.0f;
+#ifdef AC101_ENABLED
             ac101_setSourceMic();
+#endif
             selSource = acSrcMic;
             // Status_TestMsg("Input: Microphone");
             break;
         case acSrcMic:
             click_supp_gain = 0.0f;
+#ifdef AC101_ENABLED
             ac101_setSourceLine();
+#endif
             selSource = acSrcLine;
             //  Status_TestMsg("Input: LineIn");
             break;
@@ -323,13 +324,10 @@ inline void audio_task()
     memset(fl_sample, 0, sizeof(fl_sample));
     memset(fr_sample, 0, sizeof(fr_sample));
     memset(m1_sample, 0, sizeof(m1_sample));
-#endif
-
 #ifdef ESP32_AUDIO_KIT
-    i2s_read_stereo_samples_buff(fl_sample, fr_sample, SAMPLE_BUFFER_SIZE);
+    Audio_Input(fl_sample, fr_sample);
 #endif
-
-#ifndef AUDIO_PASS_THROUGH
+#else
     memset(fl_sample, 0, sizeof(fl_sample));
     memset(fr_sample, 0, sizeof(fr_sample));
     memset(m1_sample, 0, sizeof(m1_sample));
@@ -400,11 +398,7 @@ inline void audio_task()
         fr_sample[n] += m1_sample[n];
     }
 
-    /* function blocks and returns when sample is put into buffer */
-    if (i2s_write_stereo_samples_buff(fl_sample, fr_sample, SAMPLE_BUFFER_SIZE))
-    {
-        /* nothing for here */
-    }
+    Audio_Output(fl_sample, fr_sample);
 
     Status_Process_Sample(SAMPLE_BUFFER_SIZE);
 }
@@ -428,13 +422,6 @@ void loop_1Hz(void)
  */
 void loop()
 {
-#ifdef ARP_MODULE_ENABLED
-    Arp_Process(sync);
-    sync = 0;
-#endif
-
-    audio_task(); /* audio tasks blocks for one sample -> 1/44100s */
-
     static uint32_t loop_cnt;
 
     loop_cnt += SAMPLE_BUFFER_SIZE;
@@ -444,15 +431,22 @@ void loop()
         loop_1Hz();
     }
 
-    /*
-     * doing midi only 64 times per sample cycle
-     */
     Midi_Process();
 
 #ifdef MIDI_VIA_USB_ENABLED
     UsbMidi_ProcessSync();
 #endif
-    //Console_Process();
+
+#ifdef MIDI_SYNC_MASTER
+    MidiSyncMasterLoop();
+#endif
+
+#ifdef ARP_MODULE_ENABLED
+    Arp_Process(sync);
+    sync = 0;
+#endif
+
+    audio_task(); /* audio tasks blocks for one sample -> 1/44100s */
 }
 
 /*

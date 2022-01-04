@@ -47,9 +47,9 @@
 #define CONFIG_H_
 
 
-#define BOARD_ML_V1 /* activate this when using the ML PCB V1 */
+//#define BOARD_ML_V1 /* activate this when using the ML PCB V1 */
 //#define BOARD_ESP32_AUDIO_KIT_AC101 /* activate this when using the ESP32 Audio Kit v2.2 with the AC101 codec */
-//#define BOARD_ESP32_AUDIO_KIT_ES8388 /* activate this when using the ESP32 Audio Kit v2.2 with the ES8388 codec */
+#define BOARD_ESP32_AUDIO_KIT_ES8388 /* activate this when using the ESP32 Audio Kit v2.2 with the ES8388 codec */
 //#define BOARD_ESP32_DOIT /* activate this when using the DOIT ESP32 DEVKIT V1 board */
 
 /* can be used to pass line in through audio processing to output */
@@ -78,7 +78,7 @@
 #define ADC_TO_MIDI_LOOKUP_SIZE 8 /* should match ADC_INPUTS */
 
 //#define ARP_MODULE_ENABLED /* allow using arp module */
-//#define MIDI_SYNC_MASTER /* turn this off to use external midi clock signal */
+#define MIDI_SYNC_MASTER /* turn this off to use external midi clock signal */
 //#define MIDI_CTRL_ENABLED /* used for virtual split point */
 
 /*
