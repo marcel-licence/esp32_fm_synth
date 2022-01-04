@@ -54,7 +54,9 @@
 #include <SD_MMC.h>
 #include <WiFi.h>
 
+#if 0 /* this comes in future */
 #include <ml_scope.h>
+#endif
 #include <ml_arp.h>
 #include <ml_vu_meter.h>
 
