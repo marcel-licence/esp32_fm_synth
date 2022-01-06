@@ -58,6 +58,9 @@
 /* this changes latency but also speed of processing */
 #define SAMPLE_BUFFER_SIZE 48
 
+/* this variable defines the max length of the delay and also the memory consumption */
+#define MAX_DELAY   (SAMPLE_RATE ) /* 1.0s */
+
 /* this will force using const velocity for all notes, remove this to get dynamic velocity */
 #define MIDI_USE_CONST_VELOCITY
 
@@ -70,6 +73,9 @@
 
 /* activate MIDI via USB */
 //#define MIDI_VIA_USB_ENABLED
+
+/* use this to display a scope on the oled display */
+//#define OLED_OSC_DISP_ENABLED
 
 /*
  * keep in mind that activation of adc will also change your controls on startup!

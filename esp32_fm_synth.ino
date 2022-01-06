@@ -55,13 +55,17 @@
 #include <WiFi.h>
 
 
+extern void Status_ValueChangedFloat(const char *descr, float value);
+
+
 #include <ml_arp.h>
-#include <ml_vu_meter.h>
-#include <ml_reverb.h>
+#include <ml_delay.h>
 #include <ml_midi_ctrl.h>
-#if 0 /* this comes in future */
+#include <ml_reverb.h>
+#ifdef OLED_OSC_DISP_ENABLED
 #include <ml_scope.h>
 #endif
+
 
 /* to avoid the high click when turning on the microphone */
 static float click_supp_gain = 0.0f;
@@ -104,14 +108,20 @@ void setup()
     static float revBuffer[REV_BUFF_SIZE];
     Reverb_Setup(revBuffer);
 
-    Delay_Init();
+    /*
+     * Prepare a buffer which can be used for the delay
+     */
+    static int16_t *delBuffer = (int16_t *)malloc(sizeof(int16_t) * MAX_DELAY);
+    Delay_Init(delBuffer, MAX_DELAY);
 
     /*
      * setup midi module / rx port
      */
     Midi_Setup();
 
+#ifdef ARP_MODULE_ENABLED
     Arp_Init(24 * 4); /* slowest tempo one step per bar */
+#endif
 
     FmSynth_Init();
 
@@ -153,6 +163,10 @@ void Core0TaskInit()
 
 void Core0TaskSetup()
 {
+#ifdef OLED_OSC_DISP_ENABLED
+    ScopeOled_Setup();
+#endif
+
     /*
      * init your stuff for core0 here
      */
@@ -172,6 +186,10 @@ void Core0TaskLoop()
     Status_Process();
 #ifdef MIDI_VIA_USB_ENABLED
     usb_loop();
+#endif
+
+#ifdef OLED_OSC_DISP_ENABLED
+    ScopeOled_Process();
 #endif
 }
 
@@ -400,6 +418,10 @@ inline void audio_task()
 
     Audio_Output(fl_sample, fr_sample);
 
+#ifdef OLED_OSC_DISP_ENABLED
+    ScopeOled_AddSamples(fl_sample, fr_sample, SAMPLE_BUFFER_SIZE);
+#endif
+
     Status_Process_Sample(SAMPLE_BUFFER_SIZE);
 }
 
@@ -446,7 +468,7 @@ void loop()
     sync = 0;
 #endif
 
-    audio_task(); /* audio tasks blocks for one sample -> 1/44100s */
+    audio_task();
 }
 
 /*
