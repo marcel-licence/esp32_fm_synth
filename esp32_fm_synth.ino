@@ -148,6 +148,7 @@ void setup()
     Core0TaskInit();
 }
 
+#ifdef ESP32
 /*
  * Core 0
  */
@@ -161,15 +162,17 @@ void Core0TaskInit()
     xTaskCreatePinnedToCore(Core0Task, "CoreTask0", 8000, NULL, 999, &Core0TaskHnd, 0);
 }
 
+inline
 void Core0TaskSetup()
 {
+    /*
+     * init your stuff for core0 here
+     */
+
 #ifdef OLED_OSC_DISP_ENABLED
     ScopeOled_Setup();
 #endif
 
-    /*
-     * init your stuff for core0 here
-     */
     Status_Setup();
 
 #ifdef MIDI_VIA_USB_ENABLED
@@ -206,6 +209,8 @@ void Core0Task(void *parameter)
         yield();
     }
 }
+#endif /* ESP32 */
+
 
 float master_output_gain = 0.15f;
 
@@ -402,8 +407,9 @@ inline void audio_task()
     Delay_Process_Buff(m1_sample, SAMPLE_BUFFER_SIZE);
 
     /*
-     * add also some reverb
+     * add some mono reverb
      */
+
     Reverb_Process(m1_sample, SAMPLE_BUFFER_SIZE);
 
     /*

@@ -58,11 +58,11 @@
 /* this changes latency but also speed of processing */
 #define SAMPLE_BUFFER_SIZE 48
 
-/* this variable defines the max length of the delay and also the memory consumption */
-#define MAX_DELAY   (SAMPLE_RATE ) /* 1.0s */
-
 /* this will force using const velocity for all notes, remove this to get dynamic velocity */
 #define MIDI_USE_CONST_VELOCITY
+
+/* this variable defines the max length of the delay and also the memory consumption */
+#define MAX_DELAY   (SAMPLE_RATE) /* 1s -> @ 44100 samples */
 
 /* you can receive MIDI messages via serial-USB connection */
 /*
