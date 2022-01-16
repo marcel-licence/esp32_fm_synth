@@ -258,11 +258,11 @@ void App_SetOutputLevel(uint8_t not_used, float value)
     master_output_gain = value;
 }
 
-static uint32_t sync = 0;
+static uint32_t midiSyncCount = 0;
 
 void Midi_SyncRecvd()
 {
-    sync += 1;
+    midiSyncCount += 1;
 }
 
 void Synth_RealTimeMsg(uint8_t msg)
@@ -409,7 +409,6 @@ inline void audio_task()
     /*
      * add some mono reverb
      */
-
     Reverb_Process(m1_sample, SAMPLE_BUFFER_SIZE);
 
     /*
@@ -470,8 +469,8 @@ void loop()
 #endif
 
 #ifdef ARP_MODULE_ENABLED
-    Arp_Process(sync);
-    sync = 0;
+    Arp_Process(midiSyncCount);
+    midiSyncCount = 0;
 #endif
 
     audio_task();
