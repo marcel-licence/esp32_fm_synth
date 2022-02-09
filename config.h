@@ -91,7 +91,7 @@
  * include the board configuration
  * there you will find the most hardware depending pin settings
  */
-#include <ml_boards.h>
+#include <ml_boards.h> /* requires the ML_Synth library: https://github.com/marcel-licence/ML_SynthTools */
 
 #ifdef BOARD_ML_V1
 #elif (defined BOARD_ESP32_AUDIO_KIT_AC101)
