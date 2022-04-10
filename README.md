@@ -8,6 +8,12 @@
 - video presentation of the initial state of this project https://youtu.be/rGTw05GKwvU
 - little quick start guide to get started with arduino synthesizer / music projects: https://youtu.be/ZNxGCB-d68g
 
+Supported versions of board library
+---
+- ESP32 version 1.0.6 from https://github.com/espressif/arduino-esp32/releases/tag/1.0.6
+- ESP32 version 2.0.2 from https://github.com/espressif/arduino-esp32/releases/tag/2.0.2
+Please be aware that other versions might be not supported.
+
 ---
 ## Overview
 

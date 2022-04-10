@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Marcel Licence
+ * Copyright (c) 2022 Marcel Licence
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 
 #include <Arduino.h>
 #include <FS.h>
-#include <LITTLEFS.h>
 #include <SD_MMC.h>
 #include <WiFi.h>
 
@@ -58,6 +57,7 @@
 extern void Status_ValueChangedFloat(const char *descr, float value);
 
 
+/* requires the ML_SynthTools library: https://github.com/marcel-licence/ML_SynthTools */
 #include <ml_arp.h>
 #include <ml_delay.h>
 #include <ml_midi_ctrl.h>
