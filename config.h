@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Marcel Licence
+ * Copyright (c) 2022 Marcel Licence
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,6 +76,9 @@
 
 /* use this to display a scope on the oled display */
 //#define OLED_OSC_DISP_ENABLED
+
+/* use the following define to use the pressure sensor @see https://youtu.be/oHT1c7EdinU */
+//#define PRESSURE_SENSOR_ENABLED
 
 /*
  * keep in mind that activation of adc will also change your controls on startup!

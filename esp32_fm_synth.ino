@@ -141,8 +141,8 @@ void setup()
 
     Serial.printf("Firmware started successfully\n");
 
-#if 0 /* activate this line to get a tone on startup to test the DAC */
-    Synth_NoteOn(0, 64, 1.0f);
+#ifdef NOTE_ON_STARTUP /* activate this line to get a tone on startup to test the DAC */
+    FmSynth_NoteOn(0, 64, 1.0f);
 #endif
 
     Core0TaskInit();
@@ -179,6 +179,10 @@ void Core0TaskSetup()
     usb_setup();
     MIDI_setShortMsgHandler(HandleShortMsg);
 #endif
+
+#ifdef PRESSURE_SENSOR_ENABLED
+    PressureSetup();
+#endif
 }
 
 void Core0TaskLoop()
@@ -193,6 +197,10 @@ void Core0TaskLoop()
 
 #ifdef OLED_OSC_DISP_ENABLED
     ScopeOled_Process();
+#endif
+
+#ifdef PRESSURE_SENSOR_ENABLED
+    PressureLoop();
 #endif
 }
 

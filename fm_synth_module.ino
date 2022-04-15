@@ -1,5 +1,38 @@
 /*
- * This is a simple implementation of an FM Synthesizer module
+ * Copyright (c) 2022 Marcel Licence
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+ * der GNU General Public License, wie von der Free Software Foundation,
+ * Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+ * veröffentlichten Version, weiter verteilen und/oder modifizieren.
+ *
+ * Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+ * OHNE JEDE GEWÄHR,; sogar ohne die implizite
+ * Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+ * Siehe die GNU General Public License für weitere Einzelheiten.
+ *
+ * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+ * Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file fm_synth_module.ino
+ * @author Marcel Licence
+ *
+ * @brief This is a simple implementation of an FM Synthesizer module
  *
  * - similar behavior as the YM2612 (known from Sega Mega Drive / Sega Genesis)
  * - polyphonic playback of voices with 4 operators
@@ -9,9 +42,8 @@
  * - feedback
  * - length adjustable
  *
- * shown in: https://youtu.be/rGTw05GKwvU
  *
- * Author: Marcel Licence
+ * @see https://youtu.be/rGTw05GKwvU
  */
 
 #ifdef __CDT_PARSER__
@@ -151,6 +183,10 @@ float modulationDepth = 0.0f;
 float modulationSpeed = 5.0f;
 float modulationPitch = 1.0f;
 float pitchBendValue = 0.0f;
+#ifdef PRESSURE_SENSOR_ENABLED
+float pressureValue = 0.0f;
+float pressureValueFilt = 0.0f;
+#endif
 float pitchMultiplier = 1.0f;
 
 bool initChannelSetting = false;
@@ -1360,6 +1396,10 @@ void FmSynth_Process(float *left,  int bufLen)
 
     for (int n = 0; n < bufLen; n++)
     {
+#ifdef PRESSURE_SENSOR_ENABLED
+        pressureValueFilt = pressureValueFilt * 0.99f + pressureValue * 0.01f;
+#endif
+
         left[n] = 0.0;
 
         for (int j = 0; j < FM_VOICE_CNT; j++)
@@ -1373,6 +1413,9 @@ void FmSynth_Process(float *left,  int bufLen)
                 FmSynth_ProcessOperator(left, n, osc);
                 {
                     osc->out = osc->sine_preoout * osc->op_prop->tl * osc->lvl_env * osc->vel;
+#ifdef PRESSURE_SENSOR_ENABLED
+                    osc->out *= pressureValueFilt;
+#endif
                 }
 
                 FmSynth_EnvStateProcess(osc);
@@ -1559,6 +1602,13 @@ void FmSynth_ModulationWheel(uint8_t ch, float value)
 {
     modulationDepth = value;
 }
+
+#ifdef PRESSURE_SENSOR_ENABLED
+void FmSynth_Pressure(uint8_t unused, float value)
+{
+    pressureValue = value;
+}
+#endif
 
 void FmSynth_ToggleMono(uint8_t param, float value)
 {
