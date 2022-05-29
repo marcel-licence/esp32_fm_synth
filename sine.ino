@@ -35,7 +35,11 @@
  * Author: Marcel Licence
  */
 
+#ifdef ARDUINO_RUNNING_CORE
+#define SINE_BIT    11UL /* lower resolution required due to the fact that heap blocks are smaller */
+#else
 #define SINE_BIT    12UL
+#endif
 #define SINE_CNT    (1<<SINE_BIT)
 #define SINE_MSK    ((1<<SINE_BIT)-1)
 #define SINE_I(i)   ((i) >> (32 - SINE_BIT)) /* & SINE_MSK */
@@ -45,10 +49,11 @@ float *sine = NULL;
 
 void Sine_Init(void)
 {
-    sine = (float *)malloc(sizeof(float) * SINE_CNT);
+    uint32_t memSize = sizeof(float) * SINE_CNT;
+    sine = (float *)malloc(memSize);
     if (sine == NULL)
     {
-        Serial.printf("not enough heap memory for sine buffer!\n");
+        Serial.printf("not enough heap memory for sine %d buffer!\n", memSize);
     }
     for (int i = 0; i < SINE_CNT; i++)
     {

@@ -77,6 +77,8 @@ void setup()
     // put your setup code here, to run once:
     delay(500);
 
+    heap_caps_print_heap_info(MALLOC_CAP_8BIT);
+
     Serial.begin(115200);
 
     Serial.println();
