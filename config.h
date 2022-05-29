@@ -46,6 +46,9 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#ifdef __CDT_PARSER__
+#include <cdt.h>
+#endif
 
 //#define BOARD_ML_V1 /* activate this when using the ML PCB V1 */
 //#define BOARD_ESP32_AUDIO_KIT_AC101 /* activate this when using the ESP32 Audio Kit v2.2 with the AC101 codec */
@@ -89,6 +92,8 @@
 //#define ARP_MODULE_ENABLED /* allow using arp module */
 #define MIDI_SYNC_MASTER /* turn this off to use external midi clock signal */
 //#define MIDI_CTRL_ENABLED /* used for virtual split point */
+
+//#define MIDI_STREAM_PLAYER_ENABLED /* activate this to use the midi stream playback module */
 
 /*
  * include the board configuration

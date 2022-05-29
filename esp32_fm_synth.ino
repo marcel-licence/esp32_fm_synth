@@ -28,12 +28,13 @@
  * Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
  */
 
-/*
+/**
+ * @file ml_synth_basic_example.ino
+ * @author Marcel Licence
+ *
  * this file should be opened with arduino, this is the main project file
  *
  * shown in: https://youtu.be/rGTw05GKwvU
- *
- * Author: Marcel Licence
  */
 
 
@@ -143,6 +144,13 @@ void setup()
 
 #ifdef NOTE_ON_STARTUP /* activate this line to get a tone on startup to test the DAC */
     FmSynth_NoteOn(0, 64, 1.0f);
+#endif
+
+#ifdef MIDI_STREAM_PLAYER_ENABLED
+    MidiStreamPlayer_Init();
+
+    char midiFile[] = "/fm_demo2_fm0.mid";
+    MidiStreamPlayer_PlayMidiFile_fromLittleFS(midiFile, 3);
 #endif
 
     Core0TaskInit();
@@ -467,6 +475,10 @@ void loop()
     }
 
     Midi_Process();
+
+#ifdef MIDI_STREAM_PLAYER_ENABLED
+    MidiStreamPlayer_Tick(SAMPLE_BUFFER_SIZE);
+#endif
 
 #ifdef MIDI_VIA_USB_ENABLED
     UsbMidi_ProcessSync();
