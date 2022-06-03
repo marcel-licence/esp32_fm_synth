@@ -14,15 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Dieses Programm ist Freie Software: Sie k�nnen es unter den Bedingungen
+ * Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
  * der GNU General Public License, wie von der Free Software Foundation,
  * Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
- * ver�ffentlichten Version, weiter verteilen und/oder modifizieren.
+ * veröffentlichten Version, weiter verteilen und/oder modifizieren.
  *
- * Dieses Programm wird in der Hoffnung bereitgestellt, dass es n�tzlich sein wird, jedoch
- * OHNE JEDE GEW�HR,; sogar ohne die implizite
- * Gew�hr der MARKTF�HIGKEIT oder EIGNUNG F�R EINEN BESTIMMTEN ZWECK.
- * Siehe die GNU General Public License f�r weitere Einzelheiten.
+ * Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+ * OHNE JEDE GEWÄHR,; sogar ohne die implizite
+ * Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+ * Siehe die GNU General Public License für weitere Einzelheiten.
  *
  * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
  * Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
@@ -47,6 +47,9 @@
 
 
 #ifdef MIDI_STREAM_PLAYER_ENABLED
+
+
+//#define MIDI_STREAM_PLAYER_DATA_DUMP /*!< optional to dump event data from midi file */
 
 
 #ifdef ARDUINO_DAISY_SEED
@@ -79,6 +82,9 @@ extern SdFatFs fatFs;
 #include <SD_MMC.h>
 
 #include <ml_midi_file_stream.h>
+
+
+static uint64_t tickCnt = 0;
 
 
 static void listDir(FST &fs, const char *dirname, uint8_t levels);
@@ -232,6 +238,7 @@ static void listDir(FST &fs, const char *dirname, uint8_t levels)
 
 static bool midiPlaying = false;
 
+#ifdef MIDI_STREAM_PLAYER_DATA_DUMP
 void MidiDataCallback(uint8_t *data, uint8_t data_len)
 {
     printf("d:");
@@ -241,9 +248,10 @@ void MidiDataCallback(uint8_t *data, uint8_t data_len)
     }
     printf("\n");
 }
+#endif
 
 uint64_t duration = 0;
-struct midi_proc_s midi;
+struct midi_proc_s midiStreamPlayerHandle;
 
 void MidiStreamPlayer_NoteOn(uint8_t ch, uint8_t note, uint8_t vel)
 {
@@ -264,39 +272,43 @@ void MidiStreamPlayer_PlayMidiFile_fromLittleFS(char *filename, uint8_t trackToP
 {
     Serial.printf("Try to open %s from LittleFS\n", filename);
 
-    midi.raw = MidiDataCallback;
-    midi.noteOn = MidiStreamPlayer_NoteOn;
-    midi.noteOff = MidiStreamPlayer_NoteOff;
-    midi.controlChange = MidiStreamPlayer_ControlChange;
-    midi.ff = &mdiCallbacks;
+    memset(&midiStreamPlayerHandle, 0, sizeof(midiStreamPlayerHandle));
 
-    midi.midi_tempo = (60000000.0 / 100.0);
+#ifdef MIDI_STREAM_PLAYER_DATA_DUMP
+    midiStreamPlayerHandle.raw = MidiDataCallback;
+#endif
+    midiStreamPlayerHandle.noteOn = MidiStreamPlayer_NoteOn;
+    midiStreamPlayerHandle.noteOff = MidiStreamPlayer_NoteOff;
+    midiStreamPlayerHandle.controlChange = MidiStreamPlayer_ControlChange;
+    midiStreamPlayerHandle.ff = &mdiCallbacks;
 
-    midi_file_stream_load(filename, &midi);
+    midiStreamPlayerHandle.midi_tempo = (60000000.0 / 100.0);
 
-    printf("number_of_tracks: %d\n", midi.number_of_tracks);
-    printf("file_format: %d\n", midi.file_format);
-    printf("division_type_and_resolution: %d\n", interpret_uint16(midi.division_type_and_resolution));
+    midi_file_stream_load(filename, &midiStreamPlayerHandle);
 
-    if (midi.file_format == 1)
+    printf("number_of_tracks: %d\n", midiStreamPlayerHandle.number_of_tracks);
+    printf("file_format: %d\n", midiStreamPlayerHandle.file_format);
+    printf("division_type_and_resolution: %d\n", interpret_uint16(midiStreamPlayerHandle.division_type_and_resolution));
+
+    if (midiStreamPlayerHandle.file_format == 1)
     {
-        MidiStreamParseTrack(&midi);
+        MidiStreamParseTrack(&midiStreamPlayerHandle);
 
-        float temp_f = (60000000.0 / midi.midi_tempo);
-        printf("midi_tempo: %d\n", midi.midi_tempo);
+        float temp_f = (60000000.0 / midiStreamPlayerHandle.midi_tempo);
+        printf("midi_tempo: %d\n", midiStreamPlayerHandle.midi_tempo);
         printf("tempo: %0.3f\n", temp_f);
 
         for (uint8_t n = 1; n < trackToPlay; n++)
         {
-            MidiStreamSkipTrack(&midi);
+            MidiStreamSkipTrack(&midiStreamPlayerHandle);
         }
     }
 
-    MidiStreamReadTrackPrepare(&midi);
+    MidiStreamReadTrackPrepare(&midiStreamPlayerHandle);
 
     duration = 0;
     long shortDuration;
-    midiPlaying = MidiStreamReadSingleEventTime(&midi, &shortDuration);
+    midiPlaying = MidiStreamReadSingleEventTime(&midiStreamPlayerHandle, &shortDuration);
     if (midiPlaying)
     {
         Serial.printf("Started midi file playback\n");
@@ -308,17 +320,72 @@ void MidiStreamPlayer_PlayMidiFile_fromLittleFS(char *filename, uint8_t trackToP
 
     duration = shortDuration;
     duration *= SAMPLE_RATE;
-    duration *= midi.midi_tempo;
+    duration *= midiStreamPlayerHandle.midi_tempo;
 }
+
+void MidiStreamPlayerCtrl(uint8_t setting, uint8_t value)
+{
+    if (value > 0)
+    {
+        switch (setting)
+        {
+        case 0:
+            MidiStreamPlayer_PausePlayback();
+            break;
+        case 1:
+            MidiStreamPlayer_StopPlayback();
+            for (uint32_t i = 0; i < 128; i++)
+            {
+                Midi_NoteOff(0, i);
+            }
+            break;
+        case 2:
+            {
+                char midiFile[] = "/song.mid";
+                MidiStreamPlayer_PlayMidiFile_fromLittleFS(midiFile, 1);
+                tickCnt = 0;
+            }
+            break;
+        case 3:
+            tickCnt += 100000;
+            break;
+        }
+    }
+}
+
+#ifdef MIDI_FMT_INT
+void MidiStreamPlayerTempo(uint8_t unused __attribute__((unused)), uint8_t value)
+#else
+void MidiStreamPlayerTempo(uint8_t unused __attribute__((unused)), float value)
+#endif
+{
+    float tempo_f = value;
+#ifdef MIDI_FMT_INT
+    tempo_f /= 127;
+#endif
+    tempo_f = 60.0f + (tempo_f * 180.0f);
+    tempo_f = (60000000.0 / tempo_f);
+    midiStreamPlayerHandle.midi_tempo = tempo_f;
+}
+
+void MidiStreamPlayer_PausePlayback(void)
+{
+    midiPlaying = !midiPlaying;
+}
+
+void MidiStreamPlayer_StopPlayback(void)
+{
+    midiPlaying = false;
+}
+
+
 
 void MidiStreamPlayer_Tick(uint32_t ticks)
 {
-    static uint64_t tickCnt = 0;
-
     if (midiPlaying)
     {
         uint64_t longTick = ticks;
-        longTick *= (uint64_t)interpret_uint16(midi.division_type_and_resolution);
+        longTick *= (uint64_t)interpret_uint16(midiStreamPlayerHandle.division_type_and_resolution);
         longTick *= 1000000;
         tickCnt += longTick;
 
@@ -326,13 +393,14 @@ void MidiStreamPlayer_Tick(uint32_t ticks)
         {
             tickCnt -= duration;
 
-            midiPlaying &= MidiStreamReadSingleEvent(&midi);
+            midiPlaying &= MidiStreamReadSingleEvent(&midiStreamPlayerHandle);
 
             long shortDuration;
-            midiPlaying &= MidiStreamReadSingleEventTime(&midi, &shortDuration);
+            midiPlaying &= MidiStreamReadSingleEventTime(&midiStreamPlayerHandle, &shortDuration);
             duration = shortDuration;
             duration *= SAMPLE_RATE;
-            duration *= midi.midi_tempo;
+            duration *= midiStreamPlayerHandle.midi_tempo;
+            //Serial.printf("duration: %ld\n", shortDuration);
         }
     }
 }
