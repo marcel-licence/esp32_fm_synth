@@ -84,7 +84,15 @@ extern SdFatFs fatFs;
 #include <ml_midi_file_stream.h>
 
 
+#define MIDI_STREAM_PLAYER_CTRL_PAUSE 0
+#define MIDI_STREAM_PLAYER_CTRL_STOP    1
+#define MIDI_STREAM_PLAYER_CTRL_PLAY 2
+#define MIDI_STREAM_PLAYER_CTRL_SKIP 3
+#define MIDI_STREAM_PLAYER_CTRL_START 4
+
+
 static uint64_t tickCnt = 0;
+bool midiAutoLoop = false;
 
 
 static void listDir(FST &fs, const char *dirname, uint8_t levels);
@@ -323,31 +331,34 @@ void MidiStreamPlayer_PlayMidiFile_fromLittleFS(char *filename, uint8_t trackToP
     duration *= midiStreamPlayerHandle.midi_tempo;
 }
 
+#ifdef MIDI_FMT_INT
 void MidiStreamPlayerCtrl(uint8_t setting, uint8_t value)
+#else
+void MidiStreamPlayerCtrl(uint8_t setting, float value)
+#endif
 {
     if (value > 0)
     {
         switch (setting)
         {
-        case 0:
+        case MIDI_STREAM_PLAYER_CTRL_PAUSE:
             MidiStreamPlayer_PausePlayback();
             break;
-        case 1:
+        case MIDI_STREAM_PLAYER_CTRL_STOP:
             MidiStreamPlayer_StopPlayback();
-            for (uint32_t i = 0; i < 128; i++)
-            {
-                Midi_NoteOff(0, i);
-            }
             break;
-        case 2:
+        case MIDI_STREAM_PLAYER_CTRL_PLAY:
             {
                 char midiFile[] = "/song.mid";
                 MidiStreamPlayer_PlayMidiFile_fromLittleFS(midiFile, 1);
                 tickCnt = 0;
             }
             break;
-        case 3:
+        case MIDI_STREAM_PLAYER_CTRL_SKIP:
             tickCnt += 100000;
+            break;
+        case MIDI_STREAM_PLAYER_CTRL_START:
+            MidiStreamPlayer_StartPlayback();
             break;
         }
     }
@@ -376,12 +387,51 @@ void MidiStreamPlayer_PausePlayback(void)
 void MidiStreamPlayer_StopPlayback(void)
 {
     midiPlaying = false;
+    for (uint8_t n = 0; n < 16; n++)
+    {
+        for (uint32_t i = 0; i < 128; i++)
+        {
+            Midi_NoteOff(n, i);
+        }
+    }
 }
 
+void MidiStreamPlayer_StartPlayback(void)
+{
+    MidiStreamPlayer_StopPlayback();
 
+    MidiStreamRewind(&midiStreamPlayerHandle);
+
+    tickCnt = 0;
+
+    long shortDuration;
+    midiPlaying = MidiStreamReadSingleEventTime(&midiStreamPlayerHandle, &shortDuration);
+    duration = shortDuration;
+    duration *= SAMPLE_RATE;
+    duration *= midiStreamPlayerHandle.midi_tempo;
+}
 
 void MidiStreamPlayer_Tick(uint32_t ticks)
 {
+    if (midiPlaying == false)
+    {
+        if (midiAutoLoop)
+        {
+            /*
+             * this will cause an audible noise for a short moment
+             * seeking within files is very slow
+             *
+             * a new method is required to avoid this problem for better looping
+             */
+            MidiStreamRewind(&midiStreamPlayerHandle);
+            long shortDuration;
+            midiPlaying = MidiStreamReadSingleEventTime(&midiStreamPlayerHandle, &shortDuration);
+            duration = shortDuration;
+            duration *= SAMPLE_RATE;
+            duration *= midiStreamPlayerHandle.midi_tempo;
+        }
+    }
+
     if (midiPlaying)
     {
         uint64_t longTick = ticks;
@@ -400,7 +450,6 @@ void MidiStreamPlayer_Tick(uint32_t ticks)
             duration = shortDuration;
             duration *= SAMPLE_RATE;
             duration *= midiStreamPlayerHandle.midi_tempo;
-            //Serial.printf("duration: %ld\n", shortDuration);
         }
     }
 }
