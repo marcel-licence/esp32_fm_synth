@@ -237,7 +237,6 @@ bool i2s_write_stereo_samples_buff(const float *fl_sample, const float *fr_sampl
 #ifdef SAMPLE_SIZE_16BIT
         sampleDataU[n].ch[1] = uint16_t((1.0f + fr_sample[n]) * 16383.0f); /* some bits missing here */
         sampleDataU[n].ch[0] = uint16_t((1.0f + fl_sample[n]) * 16383.0f);
-        asd
 #endif
 #ifdef SAMPLE_SIZE_32BIT
         sampleDataU[n].ch[1] = int32_t(fr_sample[n] * 1073741823.0f); /* some bits missing here */
