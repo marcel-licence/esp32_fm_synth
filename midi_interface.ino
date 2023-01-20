@@ -53,6 +53,10 @@
  * a uart compatible signal
  */
 
+#ifndef MIDI_SERIAL_BAUDRATE
+#define MIDI_SERIAL_BAUDRATE	115200
+#endif
+
 #ifndef MIDI_SERIAL1_BAUDRATE
 #define MIDI_SERIAL1_BAUDRATE   31250
 #endif
