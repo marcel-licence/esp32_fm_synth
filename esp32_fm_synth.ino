@@ -67,6 +67,17 @@ extern void Status_ValueChangedFloat(const char *descr, float value);
 #include <ml_scope.h>
 #endif
 
+#include <ml_types.h>
+
+#define ML_SYNTH_INLINE_DECLARATION
+#include <i2s_interface.h>
+#include <i2s_module.h>
+#include <audio_module.h>
+#include <midi_interface.h>
+#include <midi_stream_player.h>
+#include <midi_via_ble.h>
+#include <midi_via_usb.h>
+#undef ML_SYNTH_INLINE_DECLARATION
 
 /* to avoid the high click when turning on the microphone */
 static float click_supp_gain = 0.0f;
@@ -79,7 +90,7 @@ void setup()
 
     heap_caps_print_heap_info(MALLOC_CAP_8BIT);
 
-    Serial.begin(115200);
+    Serial.begin(SERIAL_BAUDRATE);
 
     Serial.println();
 
@@ -108,7 +119,8 @@ void setup()
      * The buffer shall be static to ensure that
      * the memory will be exclusive available for the reverb module
      */
-    static float revBuffer[REV_BUFF_SIZE];
+    //static float revBuffer[REV_BUFF_SIZE];
+    static float *revBuffer = (float *)malloc(sizeof(float) * REV_BUFF_SIZE);
     Reverb_Setup(revBuffer);
 
     /*

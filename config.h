@@ -50,9 +50,19 @@
 #include <cdt.h>
 #endif
 
-//#define BOARD_ML_V1 /* activate this when using the ML PCB V1 */
+
+//#define I2S_USE_APLL
+//#define OUTPUT_SAW_TEST
+
+
+
+#define SERIAL_BAUDRATE 115200
+#define MIDI_SERIAL_BAUDRATE SERIAL_BAUDRATE
+
+
+#define BOARD_ML_V1 /* activate this when using the ML PCB V1 */
 //#define BOARD_ESP32_AUDIO_KIT_AC101 /* activate this when using the ESP32 Audio Kit v2.2 with the AC101 codec */
-#define BOARD_ESP32_AUDIO_KIT_ES8388 /* activate this when using the ESP32 Audio Kit v2.2 with the ES8388 codec */
+//#define BOARD_ESP32_AUDIO_KIT_ES8388 /* activate this when using the ESP32 Audio Kit v2.2 with the ES8388 codec */
 //#define BOARD_ESP32_DOIT /* activate this when using the DOIT ESP32 DEVKIT V1 board */
 
 /* can be used to pass line in through audio processing to output */
@@ -65,7 +75,7 @@
 #define MIDI_USE_CONST_VELOCITY
 
 /* this variable defines the max length of the delay and also the memory consumption */
-#define MAX_DELAY   (SAMPLE_RATE) /* 1s -> @ 44100 samples */
+#define MAX_DELAY   (SAMPLE_RATE/3) /* 1s -> @ 44100 samples */
 
 /* you can receive MIDI messages via serial-USB connection */
 /*
@@ -124,7 +134,7 @@
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE_16BIT
 #else
-#define SAMPLE_RATE 48000
+#define SAMPLE_RATE 48000 /* 20: 46875, 25: 37500, 30: 31250 -> 8MHz MCLK, 62500 -> 16MHz*/
 #define SAMPLE_SIZE_16BIT /* 32 bit seems not to work at the moment */
 #endif
 
