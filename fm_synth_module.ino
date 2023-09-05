@@ -166,7 +166,7 @@ struct channelSettingParam_s
     struct custom_properties_s props;
     struct op_properties_s op_prop[4];
 
-    //  float velocity_to_lvl;
+    // float velocity_to_lvl;
 
     float fmFeedback;
 
@@ -201,7 +201,6 @@ uint8_t selectedOp = OP4;
 struct op_properties_s op_props_silent;
 
 const float multiplierPitchToAddValue = ((float)(1ULL << 32ULL) / ((float)SAMPLE_RATE));
-
 
 
 void FmSynth_ToneEnvUpdate(struct synthTone_s *tone)
@@ -396,7 +395,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[1];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 1;
     setting->op_prop[0].d2l = 1.000000;
@@ -452,7 +451,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[2];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -508,7 +507,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[3];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -564,7 +563,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[4];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.999998;
+    setting->fmFeedback = 0.999998;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 1;
     setting->op_prop[0].d2l = 0.999998;
@@ -619,7 +618,7 @@ void FmSynth_Init(void)
      */
     setting = &channelSettings[5];
     setting->algo = 7;
-    setting->fmFeedback =  0.267716;
+    setting->fmFeedback = 0.267716;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -675,7 +674,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[6];
 
     setting->algo = 3;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -731,7 +730,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[7];
 
     setting->algo = 2;
-    setting->fmFeedback =  0.055118;
+    setting->fmFeedback = 0.055118;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 363;
     setting->op_prop[0].d2l = 0.614172;
@@ -787,7 +786,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[8];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -843,7 +842,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[9];
 
     setting->algo = 3;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -897,7 +896,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[10];
 
     setting->algo = 3;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -954,7 +953,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[11];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -1008,7 +1007,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[12];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -1063,7 +1062,7 @@ void FmSynth_Init(void)
 
 
     setting->algo = 5;
-    setting->fmFeedback =  0.503936;
+    setting->fmFeedback = 0.503936;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -1117,7 +1116,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[14];
 
     setting->algo = 2;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 1;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -1171,7 +1170,7 @@ void FmSynth_Init(void)
     setting = &channelSettings[15];
 
     setting->algo = 0;
-    setting->fmFeedback =  0.000000;
+    setting->fmFeedback = 0.000000;
     setting->op_prop[0].ar = 70;
     setting->op_prop[0].d1r = 32767;
     setting->op_prop[0].d2l = 1.000000;
@@ -1224,7 +1223,7 @@ void FmSynth_Init(void)
 
 }
 
-void FmSynth_ProcessOperator(float *left, int n, struct synthTone_s  *osc)
+void FmSynth_ProcessOperator(float *left, int n, struct synthTone_s *osc)
 {
     float pitch = osc->pitchCalc;
 
@@ -1243,7 +1242,7 @@ void FmSynth_ProcessOperator(float *left, int n, struct synthTone_s  *osc)
     osc->lvl_env += osc->lvl_add;
 }
 
-void FmSynth_EnvStateProcess(struct synthTone_s  *osc)
+void FmSynth_EnvStateProcess(struct synthTone_s *osc)
 {
     osc->stateLen --;
     if (osc->stateLen <= 0)
@@ -1389,7 +1388,7 @@ float FmSynth_GetModulationPitchMultiplier(void)
 }
 
 
-void FmSynth_Process(float *left,  int bufLen)
+void FmSynth_Process(float *left, int bufLen)
 {
     float pitchVar = pitchBendValue + FmSynth_GetModulationPitchMultiplier();
     pitchMultiplier = pow(2.0f, pitchVar / 12.0f);
@@ -1408,7 +1407,7 @@ void FmSynth_Process(float *left,  int bufLen)
 
             for (int i = 0; i < 4; i++)
             {
-                struct synthTone_s  *osc = &voice->op[i];
+                struct synthTone_s *osc = &voice->op[i];
                 osc->pitchCalc = osc->op_prop->mul * osc->pitch * pitchMultiplier;
                 FmSynth_ProcessOperator(left, n, osc);
                 {
@@ -1522,9 +1521,9 @@ void FmSynth_NoteOn(uint8_t ch, uint8_t note, float vel)
         FmSynth_ToneInit(tone, &currentChSetting->op_prop[OP3]);
         tone->pitch = tonePitch;
 
-        //   Serial.printf("%0.6f\n", currentChSetting->velocity_to_lvl);
-        //  Serial.printf("%0.6f\n", vel);
-        //   Serial.printf("%0.6f\n", (1.0f-currentChSetting->velocity_to_lvl) + currentChSetting->velocity_to_lvl * vel);
+        // Serial.printf("%0.6f\n", currentChSetting->velocity_to_lvl);
+        // Serial.printf("%0.6f\n", vel);
+        // Serial.printf("%0.6f\n", (1.0f-currentChSetting->velocity_to_lvl) + currentChSetting->velocity_to_lvl * vel);
         tone->vel *= (1.0f - tone->op_prop->vel_to_tl) + tone->op_prop->vel_to_tl * vel;
 
         tone = tones[OP2];

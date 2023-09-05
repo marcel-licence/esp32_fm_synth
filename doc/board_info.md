@@ -7,8 +7,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 1.0.6<br />
 <b>Board:</b> ESP32 Dev Module<br />
 <br />
-<b>Program storage space:</b> 718726 bytes<br />
-<b>Dynamic memory:</b> 60980 bytes<br />
+<b>Program storage space:</b> 713714 bytes<br />
+<b>Dynamic memory:</b> 53828 bytes<br />
 <br />
 <b>PSRAM:</b> Disabled<br />
 <b>Partition Scheme:</b> Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)<br />
@@ -96,8 +96,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 1.0.6<br />
 <b>Board:</b> ESP32 Wrover Module<br />
 <br />
-<b>Program storage space:</b> 783086 bytes<br />
-<b>Dynamic memory:</b> 61168 bytes<br />
+<b>Program storage space:</b> 778170 bytes<br />
+<b>Dynamic memory:</b> 54016 bytes<br />
 <br />
 <b>Partition Scheme:</b> Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)<br />
 <b>Flash Mode:</b> QIO<br />
@@ -182,8 +182,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 2.0.0<br />
 <b>Board:</b> ESP32 Dev Module<br />
 <br />
-<b>Program storage space:</b> 723377 bytes<br />
-<b>Dynamic memory:</b> 60544 bytes<br />
+<b>Program storage space:</b> 718413 bytes<br />
+<b>Dynamic memory:</b> 53408 bytes<br />
 <br />
 <b>PSRAM:</b> Disabled<br />
 <b>Partition Scheme:</b> Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)<br />
@@ -273,8 +273,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 2.0.7<br />
 <b>Board:</b> ESP32 Dev Module<br />
 <br />
-<b>Program storage space:</b> 789697 bytes<br />
-<b>Dynamic memory:</b> 65184 bytes<br />
+<b>Program storage space:</b> 784693 bytes<br />
+<b>Dynamic memory:</b> 58040 bytes<br />
 <br />
 <b>JTAG Adapter:</b> Disabled<br />
 <b>PSRAM:</b> Disabled<br />

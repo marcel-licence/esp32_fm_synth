@@ -48,7 +48,7 @@
 
 //#define PRINT_PRESSURE /* activate this to show measured pressure value */
 
-Q2HX711  MPS20N0040D(PS_SDA, PS_SCL); // start comm with the HX710B
+Q2HX711 MPS20N0040D(PS_SDA, PS_SCL); // start comm with the HX710B
 
 void PressureSetup()
 {
