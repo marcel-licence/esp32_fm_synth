@@ -7,8 +7,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 1.0.6<br />
 <b>Board:</b> ESP32 Dev Module<br />
 <br />
-<b>Program storage space:</b> 713290 bytes<br />
-<b>Dynamic memory:</b> 53716 bytes<br />
+<b>Program storage space:</b> 715802 bytes<br />
+<b>Dynamic memory:</b> 53756 bytes<br />
 <br />
 <b>PSRAM:</b> Disabled<br />
 <b>Partition Scheme:</b> Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)<br />
@@ -30,7 +30,7 @@ Below you will find a list of build which can be configured and should compile w
     </tr>
     <tr>
         <td>ML SynthTools</td>
-        <td>1.1.0</td>
+        <td>1.3.1</td>
         <td>https://github.com/marcel-licence/ML_SynthTools</td>
         <td>https://github.com/marcel-licence/ML_SynthTools.git</td>
         <td>False</td>
@@ -62,6 +62,13 @@ Below you will find a list of build which can be configured and should compile w
         <td>http://arduino.cc/en/Reference/Wire</td>
         <td></td>
         <td>True</td>
+    </tr>
+    <tr>
+        <td>LittleFS_esp32</td>
+        <td>1.0.6</td>
+        <td>https://github.com/lorol/LITTLEFS</td>
+        <td>https://github.com/lorol/LITTLEFS</td>
+        <td>False</td>
     </tr>
     <tr>
         <td>Adafruit GFX Library</td>
@@ -96,8 +103,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 1.0.6<br />
 <b>Board:</b> ESP32 Wrover Module<br />
 <br />
-<b>Program storage space:</b> 777666 bytes<br />
-<b>Dynamic memory:</b> 53904 bytes<br />
+<b>Program storage space:</b> 780206 bytes<br />
+<b>Dynamic memory:</b> 53944 bytes<br />
 <br />
 <b>Partition Scheme:</b> Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)<br />
 <b>Flash Mode:</b> QIO<br />
@@ -116,7 +123,7 @@ Below you will find a list of build which can be configured and should compile w
     </tr>
     <tr>
         <td>ML SynthTools</td>
-        <td>1.1.0</td>
+        <td>1.3.1</td>
         <td>https://github.com/marcel-licence/ML_SynthTools</td>
         <td>https://github.com/marcel-licence/ML_SynthTools.git</td>
         <td>False</td>
@@ -148,6 +155,13 @@ Below you will find a list of build which can be configured and should compile w
         <td>http://arduino.cc/en/Reference/Wire</td>
         <td></td>
         <td>True</td>
+    </tr>
+    <tr>
+        <td>LittleFS_esp32</td>
+        <td>1.0.6</td>
+        <td>https://github.com/lorol/LITTLEFS</td>
+        <td>https://github.com/lorol/LITTLEFS</td>
+        <td>False</td>
     </tr>
     <tr>
         <td>Adafruit GFX Library</td>
@@ -182,8 +196,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 2.0.0<br />
 <b>Board:</b> ESP32 Dev Module<br />
 <br />
-<b>Program storage space:</b> 717977 bytes<br />
-<b>Dynamic memory:</b> 53296 bytes<br />
+<b>Program storage space:</b> 720125 bytes<br />
+<b>Dynamic memory:</b> 53336 bytes<br />
 <br />
 <b>PSRAM:</b> Disabled<br />
 <b>Partition Scheme:</b> Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)<br />
@@ -207,7 +221,7 @@ Below you will find a list of build which can be configured and should compile w
     </tr>
     <tr>
         <td>ML SynthTools</td>
-        <td>1.1.0</td>
+        <td>1.3.1</td>
         <td>https://github.com/marcel-licence/ML_SynthTools</td>
         <td>https://github.com/marcel-licence/ML_SynthTools.git</td>
         <td>False</td>
@@ -237,6 +251,13 @@ Below you will find a list of build which can be configured and should compile w
         <td>Wire</td>
         <td>2.0.0</td>
         <td>http://arduino.cc/en/Reference/Wire</td>
+        <td></td>
+        <td>True</td>
+    </tr>
+    <tr>
+        <td>LittleFS</td>
+        <td>2.0.0</td>
+        <td></td>
         <td></td>
         <td>True</td>
     </tr>
@@ -273,8 +294,8 @@ Below you will find a list of build which can be configured and should compile w
 <b>Version:</b> 2.0.7<br />
 <b>Board:</b> ESP32 Dev Module<br />
 <br />
-<b>Program storage space:</b> 784557 bytes<br />
-<b>Dynamic memory:</b> 58008 bytes<br />
+<b>Program storage space:</b> 786725 bytes<br />
+<b>Dynamic memory:</b> 58040 bytes<br />
 <br />
 <b>JTAG Adapter:</b> Disabled<br />
 <b>PSRAM:</b> Disabled<br />
@@ -300,7 +321,7 @@ Below you will find a list of build which can be configured and should compile w
     </tr>
     <tr>
         <td>ML SynthTools</td>
-        <td>1.1.0</td>
+        <td>1.3.1</td>
         <td>https://github.com/marcel-licence/ML_SynthTools</td>
         <td>https://github.com/marcel-licence/ML_SynthTools.git</td>
         <td>False</td>
@@ -330,6 +351,13 @@ Below you will find a list of build which can be configured and should compile w
         <td>Wire</td>
         <td>2.0.0</td>
         <td>http://arduino.cc/en/Reference/Wire</td>
+        <td>https://github.com/espressif/arduino-esp32.git</td>
+        <td>True</td>
+    </tr>
+    <tr>
+        <td>LittleFS</td>
+        <td>2.0.0</td>
+        <td></td>
         <td>https://github.com/espressif/arduino-esp32.git</td>
         <td>True</td>
     </tr>
