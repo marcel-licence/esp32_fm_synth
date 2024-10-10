@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Marcel Licence
+ * Copyright (c) 2024 Marcel Licence
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@ extern void Status_ValueChangedFloat(const char *descr, float value);
 
 
 /* requires the ML_SynthTools library: https://github.com/marcel-licence/ML_SynthTools */
+#include <caps_info.h>
 #include <ml_arp.h>
 #include <ml_delay.h>
 #include <ml_midi_ctrl.h>
@@ -68,6 +69,8 @@ extern void Status_ValueChangedFloat(const char *descr, float value);
 #endif
 
 #include <ml_types.h>
+#include <ml_fm.h>
+
 
 #define ML_SYNTH_INLINE_DECLARATION
 #include <ml_inline.h>
@@ -76,8 +79,10 @@ extern void Status_ValueChangedFloat(const char *descr, float value);
 /* to avoid the high click when turning on the microphone */
 static float click_supp_gain = 0.0f;
 
-/* this application starts here */
-void setup()
+/**
+    @brief This function contains the setup routines.
+ */
+void setup(void)
 {
     // put your setup code here, to run once:
     delay(500);
@@ -85,6 +90,17 @@ void setup()
     heap_caps_print_heap_info(MALLOC_CAP_8BIT);
 
     Serial.begin(SERIAL_BAUDRATE);
+
+#ifdef ML_BOARD_SETUP
+    Board_Setup();
+#else
+    Audio_Setup();
+
+    /*
+     * setup midi module / rx port
+     */
+    Midi_Setup();
+#endif
 
     Serial.println();
 
@@ -101,12 +117,9 @@ void setup()
     Status_Setup();
 #endif
 
-    Audio_Setup();
-
 #ifdef ESP32_AUDIO_KIT
     button_setup();
 #endif
-    Sine_Init();
 
     /*
      * Initialize reverb
@@ -132,7 +145,7 @@ void setup()
     Arp_Init(24 * 4); /* slowest tempo one step per bar */
 #endif
 
-    FmSynth_Init();
+    FmSynth_Init(SAMPLE_RATE);
 
 #ifdef ESP32
     Serial.printf("ESP.getFreeHeap() %d\n", ESP.getFreeHeap());
@@ -322,7 +335,7 @@ void MidiSyncMasterLoop(void)
     }
 }
 
-void Synth_SetMidiMasterTempo(uint8_t unused, float val)
+void Synth_SetMidiMasterTempo(uint8_t unused __attribute__((unused)), float val)
 {
     midi_tempo = 60.0f + val * (240.0f - 60.0f);
 }
@@ -338,7 +351,7 @@ void Synth_SongPosition(uint16_t pos)
     }
 }
 
-void Synth_SongPosReset(uint8_t unused, float var)
+void Synth_SongPosReset(uint8_t unused __attribute__((unused)), float var)
 {
     if (var > 0)
     {
@@ -361,6 +374,8 @@ static float m1_sample[SAMPLE_BUFFER_SIZE];
 #ifndef absf
 #define absf(a) ((a>=0.0f)?(a):(-a))
 #endif
+
+static float synthAmp = 1.0f;
 
 /*
  * the main audio task
@@ -414,16 +429,8 @@ inline void audio_task()
     /*
      * main loop core
      */
-    FmSynth_Process(m1_sample, SAMPLE_BUFFER_SIZE);
 
-    /*
-     * apply master output gain
-     */
-    for (int n = 0; n < SAMPLE_BUFFER_SIZE; n++)
-    {
-        /* apply master_output_gain */
-        m1_sample[n] *= master_output_gain;
-    }
+    FmSynth_Process(m1_sample, m1_sample, SAMPLE_BUFFER_SIZE);
 
     /*
      * little simple delay effect
@@ -436,11 +443,13 @@ inline void audio_task()
     Reverb_Process(m1_sample, SAMPLE_BUFFER_SIZE);
 
     /*
-     * mix mono signal to stereo out
+     * apply master output gain
      */
     for (int n = 0; n < SAMPLE_BUFFER_SIZE; n++)
     {
-        m1_sample[n] *= 2.125f;
+        m1_sample[n] *= master_output_gain * synthAmp;
+
+        /* apply master_output_gain */
         fl_sample[n] += m1_sample[n];
         fr_sample[n] += m1_sample[n];
     }
