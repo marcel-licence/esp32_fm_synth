@@ -14,6 +14,8 @@ Supported versions of board library
 - ESP32 version 2.0.2 from https://github.com/espressif/arduino-esp32/releases/tag/2.0.2
 Please be aware that other versions might be not supported.
 
+> **⚠️ Note:** This project might be outdated and is no longer actively maintained. Development has continued in a new repository, which covers the **ESP32** and other boards as well. Please check out the latest version of the project here: **[ml_synth_fm_example](https://github.com/marcel-licence/ml_synth_fm_example)**
+
 ---
 ## Overview
 
